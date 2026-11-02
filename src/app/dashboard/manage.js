@@ -7,12 +7,13 @@ import AppointmentsTab from "./tabs/appointments-tab";
 import CalendarTab from "./tabs/calendar-tab";
 import CustomersTab from "./tabs/customers-tab";
 import ServicesTab from "./tabs/services-tab";
+import ProductsTab from "./tabs/products-tab";
 import BarbersTab from "./tabs/barbers-tab";
 import HoursTab from "./tabs/hours-tab";
 import SettingsTab from "./tabs/settings-tab";
 
 const TABS = {
-  overview: OverviewTab, calendar: CalendarTab, appointments: AppointmentsTab, customers: CustomersTab, services: ServicesTab,
+  overview: OverviewTab, calendar: CalendarTab, appointments: AppointmentsTab, customers: CustomersTab, services: ServicesTab, products: ProductsTab,
   barbers: BarbersTab, hours: HoursTab, settings: SettingsTab
 };
 
