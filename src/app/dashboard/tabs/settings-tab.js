@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";\nimport { useRouter } from "next/navigation";
 
 const cleanSlug = (value) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 export default function SettingsTab({ business }) {
-  const sb = useMemo(() => createClient(), []);
+  const sb = useMemo(() => createClient(), []);\n  const router = useRouter();
   const [s, setS] = useState(null);
   const [profile, setProfile] = useState({
     name: business.name, slug: business.slug, description: business.description || "",
@@ -97,7 +97,7 @@ export default function SettingsTab({ business }) {
       min_notice_minutes: Number(s.min_notice_minutes), cancellation_hours: Number(s.cancellation_hours),
       pending_hold_hours: Number(s.pending_hold_hours), auto_confirm: !!s.auto_confirm
     }).eq("business_id", business.id);
-    if (se) setError(se.message); else setInfo("Cambios guardados. Tu nueva página está en /" + slug);
+    if (se) setError(se.message); else { setInfo("Cambios guardados. Tu nueva página está en /" + slug); router.refresh(); }
   }
 
   if (error && !s) return <div className="error-box">{error}</div>;
