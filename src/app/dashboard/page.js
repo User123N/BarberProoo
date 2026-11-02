@@ -36,7 +36,8 @@ export default async function DashboardPage({ searchParams }) {
               ))}
             </nav>
           )}
-          {current?.business?.slug && <Link className="btn btn-outline mobile-public-link" href={"/" + current.business.slug} target="_blank" rel="noopener noreferrer">Ver página pública ↗</Link>}\n          <span className="muted user-email">{user.email}</span>
+          {current?.business?.slug && <Link className="btn btn-outline mobile-public-link" href={"/" + current.business.slug} target="_blank" rel="noopener noreferrer">Ver página pública ↗</Link>}
+          <span className="muted user-email">{user.email}</span>
           <SignOutButton />
         </div>
       </header>
