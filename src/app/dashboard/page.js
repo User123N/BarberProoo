@@ -51,7 +51,7 @@ export default async function DashboardPage({ searchParams }) {
               <div className="eyebrow">BARBERPRO · CONFIGURACIÓN</div>
               <h1>Tu espacio está listo para comenzar.</h1>
               <p>Tu usuario inició sesión, pero todavía no está vinculado a una barbería.</p>
-              <a className="btn btn-primary" href="/setup">Ver instrucciones de configuración</a>
+              <Link className="btn btn-primary" href="/setup">Ver instrucciones de configuración</Link>
             </div>
           )}
       </main>
