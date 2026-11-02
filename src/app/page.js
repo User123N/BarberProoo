@@ -35,7 +35,7 @@ export default function Home() {
         <section className="shell hero">
           <div className="hero-copy">
             <p className="hero-kicker">Reservas y gestión para barberías</p>
-            <h1>La agenda de tu barbería, sin un solo cruce de horarios.</h1>
+            <h1>La agenda de tu barbería, <span>sin un solo cruce de horarios.</span></h1>
             <p className="lead">Tus clientes reservan en segundos, tu equipo ve su día en una vista y tú controlas servicios, clientes y pagos desde un mismo lugar.</p>
             <div className="actions">
               <Link className="btn primary" href="/login">Entrar al panel</Link>
