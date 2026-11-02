@@ -29,7 +29,7 @@ export default async function PublicBusinessPage({ params }) {
   const mapQuery = business.latitude != null && business.longitude != null
     ? `${business.latitude},${business.longitude}`
     : [business.address, business.city].filter(Boolean).join(", ") || [business.name, business.city].filter(Boolean).join(", ");
-  const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`;
+  const mapUrl = `https://maps.google.com/maps?hl=es&q=${encodeURIComponent(mapQuery)}&z=15&ie=UTF8&iwloc=B&output=embed`;
 
   return (
     <main className="public-page">
@@ -89,7 +89,7 @@ export default async function PublicBusinessPage({ params }) {
         <div className="section-heading"><div><div className="eyebrow">Cómo llegar</div><h2>Visítanos</h2><p className="muted">{[business.address,business.city].filter(Boolean).join(", ")}</p></div>
           <a className="btn btn-outline" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`} target="_blank" rel="noopener noreferrer">Abrir en Google Maps ↗</a>
         </div>
-        <div className="location-map"><iframe title={`Ubicación de ${business.name}`} src={mapUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div>
+        <div className="location-map"><iframe title={`Ubicación de ${business.name}`} src={mapUrl} loading="lazy" allowFullScreen /></div>
       </section>
 
       <section className="shell public-section booking-layout" id="reservar">
