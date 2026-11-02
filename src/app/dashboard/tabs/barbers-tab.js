@@ -1,0 +1,107 @@
+"use client";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+export default function BarbersTab({ business }) {
+  const sb = useMemo(() => createClient(), []);
+  const [barbers, setBarbers] = useState([]);
+  const [services, setServices] = useState([]);
+  const [links, setLinks] = useState([]); // barber_services
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [open, setOpen] = useState(null);
+  const [picked, setPicked] = useState([]);
+  const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
+
+  const load = useCallback(async () => {
+    const [b, s, l] = await Promise.all([
+      sb.from("barbers").select("*").eq("business_id", business.id).order("created_at"),
+      sb.from("services").select("id,name,active").eq("business_id", business.id).eq("active", true).order("name"),
+      sb.from("barber_services").select("barber_id,service_id").eq("business_id", business.id)
+    ]);
+    const err = b.error || s.error || l.error;
+    if (err) setError(err.message);
+    setBarbers(b.data || []); setServices(s.data || []); setLinks(l.data || []);
+  }, [sb, business.id]);
+  useEffect(() => { load(); }, [load]);
+
+  async function add(e) {
+    e.preventDefault(); setError("");
+    const { error: err } = await sb.from("barbers").insert({ business_id: business.id, display_name: name.trim(), bio: bio.trim() || null });
+    if (err) return setError(err.message);
+    setName(""); setBio(""); load();
+  }
+
+  async function uploadPhoto(b, file) {
+    if (!file) return;
+    if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) return setError("Usa una imagen de máximo 5 MB.");
+    setError("");
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `${business.id}/barbers/${b.id}-${Date.now()}.${ext}`;
+    const { error: upError } = await sb.storage.from("barberpro-media").upload(path, file, { contentType: file.type, upsert: true });
+    if (upError) return setError(upError.message);
+    const { data } = sb.storage.from("barberpro-media").getPublicUrl(path);
+    const { error: saveError } = await sb.from("barbers").update({ photo_url: data.publicUrl }).eq("id", b.id).eq("business_id", business.id);
+    if (saveError) setError(saveError.message); else { setInfo(`Fotografía de ${b.display_name} actualizada.`); load(); }
+  }
+
+  async function toggle(b) {
+    const { error: err } = await sb.from("barbers").update({ active: !b.active }).eq("id", b.id).eq("business_id", business.id);
+    if (err) setError(err.message); else load();
+  }
+
+  function openServices(b) {
+    setInfo("");
+    if (open === b.id) return setOpen(null);
+    setOpen(b.id);
+    setPicked(links.filter((x) => x.barber_id === b.id).map((x) => x.service_id));
+  }
+
+  async function saveServices(id) {
+    setError(""); setInfo("");
+    const { error: err } = await sb.rpc("set_barber_services", { p_barber: id, p_services: picked });
+    if (err) return setError(err.message);
+    setInfo("Servicios actualizados."); setOpen(null); load();
+  }
+
+  return (
+    <>
+      {error && <div className="error-box">{error}</div>}
+      {info && <p className="form-message" role="status">{info}</p>}
+      <form className="inline-form" onSubmit={add}>
+        <h3>Agregar barbero</h3>
+        <input required placeholder="Nombre del barbero" value={name} onChange={(e) => setName(e.target.value)} />
+        <input placeholder="Biografía (opcional)" value={bio} onChange={(e) => setBio(e.target.value)} />
+        <button className="btn btn-primary">Agregar</button>
+      </form>
+      <p className="muted" style={{ fontSize: 13 }}>Un barbero nuevo no tiene horario: configúralo en la pestaña “Horarios” para que pueda recibir reservas.</p>
+      <div className="entity-list">
+        {barbers.map((b) => (
+          <div key={b.id}>
+            <div className="entity-row" style={b.active ? undefined : { opacity: 0.55 }}>
+              <div className="barber-admin-identity">{b.photo_url ? <img src={b.photo_url} alt=""/> : <span className="barber-admin-placeholder">{b.display_name.slice(0,1).toUpperCase()}</span>}<div><b>{b.display_name}</b><p>{b.active ? "Activo" : "Inactivo"} · {links.some((x) => x.barber_id === b.id) ? "servicios asignados" : "realiza todos los servicios"}</p><label className="mini-upload">Cambiar foto<input type="file" accept="image/*" onChange={e=>uploadPhoto(b,e.target.files?.[0])}/></label></div></div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button className="btn" onClick={() => openServices(b)}>Servicios</button>
+                <button className={b.active ? "btn btn-danger" : "btn"} onClick={() => toggle(b)}>{b.active ? "Desactivar" : "Reactivar"}</button>
+              </div>
+            </div>
+            {open === b.id && (
+              <div className="feature" style={{ marginTop: 8 }}>
+                <p className="muted" style={{ fontSize: 13 }}>Marca los servicios que realiza. Sin ninguno marcado, realiza todos.</p>
+                {services.map((s) => (
+                  <label key={s.id} style={{ display: "block", margin: "6px 0" }}>
+                    <input type="checkbox" checked={picked.includes(s.id)}
+                      onChange={(e) => setPicked(e.target.checked ? [...picked, s.id] : picked.filter((x) => x !== s.id))} /> {s.name}
+                  </label>
+                ))}
+                <button className="btn primary" onClick={() => saveServices(b.id)} style={{ marginTop: 10 }}>Guardar servicios</button>
+              </div>
+            )}
+          </div>
+        ))}
+        {!barbers.length && <p className="empty">Aún no hay barberos.</p>}
+      </div>
+    </>
+  );
+}
