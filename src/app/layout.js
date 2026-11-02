@@ -1,5 +1,6 @@
 import "./globals.css";
 import "./premium.css";
+import "./refined.css";
 import { DM_Sans, Manrope, Fraunces } from "next/font/google";
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm", display: "swap" });
