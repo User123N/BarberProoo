@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { safeNext } from "@/lib/safe-redirect";
@@ -42,7 +43,7 @@ export default function LoginForm() {
       <button className="btn primary" disabled={busy} style={{width:"100%",marginTop:18,opacity:busy?.65:1}}>
         {busy ? "Verificando..." : "Iniciar sesión"}
       </button>
-      <p style={{fontSize:13,marginTop:14}}><a className="muted" href="/forgot-password">¿Olvidaste tu contraseña?</a></p>
+      <p style={{fontSize:13,marginTop:14}}><Link className="muted" href="/forgot-password">¿Olvidaste tu contraseña?</Link></p>
       <p className="muted" style={{fontSize:12,lineHeight:1.6,marginTop:18}}>
         Las cuentas se crearán desde el proceso administrativo autorizado. El registro público está deshabilitado en esta etapa.
       </p>
