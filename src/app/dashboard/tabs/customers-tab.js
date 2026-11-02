@@ -1,6 +1,8 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icons";
+import { SkeletonRows } from "@/components/Skeleton";
 
 const PAGE = 25;
 
@@ -30,19 +32,29 @@ export default function CustomersTab({ business }) {
   return (
     <>
       {error && <div className="error-box">{error}</div>}
-      <p className="muted">{total} cliente(s)</p>
-      <input placeholder="Buscar por nombre o teléfono" value={search} onChange={(e) => { setPage(0); setSearch(e.target.value); }} style={{ margin: "8px 0 14px", width: "100%", maxWidth: 360 }} />
-      <div className="table-card table-scroll">
-        <table>
-          <thead><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Registro</th></tr></thead>
-          <tbody>{rows.map((c) => (
-            <tr key={c.id}><td>{c.full_name}</td><td>{c.phone}</td><td>{c.email || "—"}</td><td>{new Date(c.created_at).toLocaleDateString("es-CO")}</td></tr>
-          ))}</tbody>
-        </table>
-        {loading && <p className="empty">Cargando…</p>}
-        {!loading && !rows.length && <p className="empty">Sin resultados.</p>}
+      <div className="toolbar">
+        <label className="search-box"><Icon name="search" size={18} />
+          <input placeholder="Buscar por nombre o teléfono" value={search} onChange={(e) => { setPage(0); setSearch(e.target.value); }} />
+        </label>
+        <span className="muted">{total} cliente(s)</span>
       </div>
-      <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 12 }}>
+      {loading && !rows.length ? <SkeletonRows rows={6} /> : (
+        <div className="table-card table-scroll stack-table">
+          <table>
+            <thead><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Registro</th></tr></thead>
+            <tbody>{rows.map((c) => (
+              <tr key={c.id}>
+                <td data-label="Nombre"><span className="who"><span className="avatar">{c.full_name.slice(0, 1).toUpperCase()}</span><b>{c.full_name}</b></span></td>
+                <td data-label="Teléfono">{c.phone}</td>
+                <td data-label="Correo">{c.email || "—"}</td>
+                <td data-label="Registro">{new Date(c.created_at).toLocaleDateString("es-CO")}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+          {!loading && !rows.length && <p className="empty">Sin resultados.</p>}
+        </div>
+      )}
+      <div className="pager">
         <button className="btn" disabled={page === 0} onClick={() => setPage(page - 1)}>← Anterior</button>
         <span className="muted">Página {page + 1} de {pages}</span>
         <button className="btn" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>Siguiente →</button>

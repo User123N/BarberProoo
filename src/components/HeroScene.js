@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
  * El parallax sólo se activa con puntero fino y sin "reduce motion";
  * en móviles queda estática y sin JavaScript de movimiento.
  */
-export default function HeroScene() {
+export default function HeroScene({ compact = false }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function HeroScene() {
   }, []);
 
   return (
-    <div className="scene" ref={ref} aria-hidden="true">
+    <div className={compact ? "scene scene-compact" : "scene"} ref={ref} aria-hidden="true">
       <div className="scene-glow" />
       <div className="scene-floor" />
 
@@ -117,6 +117,43 @@ export default function HeroScene() {
           <path d="M26 59 C76 28 150 24 210 44" fill="none" stroke="rgba(255,255,255,.7)" />
           <rect x="206" y="42" width="84" height="26" rx="13" fill="url(#razorHandle)" stroke="rgba(223,185,111,.45)" />
           <circle cx="214" cy="52" r="6" fill="#c99d56" />
+        </svg>
+      </div>
+
+      <div className="layer layer-deep">
+        <svg className="tool bottle" viewBox="0 0 90 190" width="90" height="190">
+          <defs>
+            <linearGradient id="glass" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#0b0c0f" /><stop offset=".3" stopColor="#3a3d45" /><stop offset=".55" stopColor="#14151a" /><stop offset="1" stopColor="#050506" />
+            </linearGradient>
+            <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#6b4f26" /><stop offset=".4" stopColor="#f0d5a0" /><stop offset="1" stopColor="#7a5a2b" />
+            </linearGradient>
+          </defs>
+          <rect x="30" y="4" width="30" height="34" rx="6" fill="url(#cap)" />
+          <rect x="36" y="38" width="18" height="12" fill="#1a1b20" />
+          <path d="M22 54 Q22 48 30 48 H60 Q68 48 68 54 V172 Q68 184 56 184 H34 Q22 184 22 172 Z" fill="url(#glass)" stroke="rgba(255,255,255,.16)" />
+          <rect x="30" y="88" width="30" height="52" rx="5" fill="none" stroke="rgba(217,179,106,.7)" />
+          <path d="M37 106h16M40 116h10" stroke="rgba(217,179,106,.8)" strokeLinecap="round" />
+          <path d="M28 58v108" stroke="rgba(255,255,255,.22)" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <div className="cube" />
+        <svg className="tool pole" viewBox="0 0 44 170" width="44" height="170">
+          <defs>
+            <clipPath id="poleClip"><rect x="6" y="14" width="32" height="142" rx="14" /></clipPath>
+            <linearGradient id="poleShade" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="rgba(0,0,0,.55)" /><stop offset=".3" stopColor="rgba(255,255,255,.28)" /><stop offset=".7" stopColor="rgba(0,0,0,.05)" /><stop offset="1" stopColor="rgba(0,0,0,.65)" />
+            </linearGradient>
+          </defs>
+          <rect x="10" y="0" width="24" height="16" rx="6" fill="#c99d56" />
+          <rect x="10" y="154" width="24" height="16" rx="6" fill="#c99d56" />
+          <g clipPath="url(#poleClip)">
+            <rect x="6" y="14" width="32" height="142" fill="#f4efe6" />
+            <g className="pole-stripes">
+              {Array.from({ length: 10 }).map((_, i) => <path key={i} d={`M-10 ${i * 30 - 10} L60 ${i * 30 - 50} L60 ${i * 30 - 30} L-10 ${i * 30 + 10} Z`} fill={i % 2 ? "#1a1b20" : "#b0873f"} />)}
+            </g>
+            <rect x="6" y="14" width="32" height="142" fill="url(#poleShade)" />
+          </g>
         </svg>
       </div>
 

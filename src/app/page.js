@@ -75,6 +75,20 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="shell photo-band" aria-label="El oficio">
+          <figure className="pb-a"><img src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=900&q=80" alt="Barbero perfilando una barba" width="900" height="1100" loading="lazy" decoding="async" /><figcaption>Precisión en cada línea</figcaption></figure>
+          <div className="pb-copy">
+            <h2>Una experiencia a la altura de tu marca.</h2>
+            <p>Tus clientes reservan desde una página con tu logo, tu portada, tus servicios y tu equipo. Tú decides cómo se ve tu barbería; BarberPro se encarga del orden.</p>
+            <ul className="pb-list">
+              <li><span>Página pública propia</span><small>Con logo, portada y fotos de tu equipo.</small></li>
+              <li><span>Reserva en pocos pasos</span><small>Servicio, profesional, fecha, hora y datos.</small></li>
+              <li><span>Avisos por WhatsApp</span><small>Contacta a tu cliente con un mensaje listo.</small></li>
+            </ul>
+          </div>
+          <figure className="pb-b"><img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=800&q=80" alt="Interior de barbería con sillones de cuero" width="800" height="1000" loading="lazy" decoding="async" /><figcaption>Tu espacio, bien presentado</figcaption></figure>
+        </section>
+
         <section className="shell gallery">
           <figure className="g-main">
             <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1100&q=80" alt="Interior de una barbería moderna" width="1100" height="760" loading="lazy" decoding="async" />

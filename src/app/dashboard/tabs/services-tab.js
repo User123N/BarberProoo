@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { money } from "@/lib/tz";
+import Icon, { serviceIcon } from "@/components/Icons";
+import { SkeletonCards } from "@/components/Skeleton";
 
 const EMPTY = { name: "", description: "", price: "", duration_minutes: 30 };
 
@@ -11,10 +13,12 @@ export default function ServicesTab({ business }) {
   const [form, setForm] = useState(EMPTY);
   const [editing, setEditing] = useState(null);
   const [error, setError] = useState("");
+  const [ready, setReady] = useState(false);
 
   const load = useCallback(async () => {
     const { data, error: err } = await sb.from("services").select("*").eq("business_id", business.id).order("created_at");
     if (err) setError(err.message); else setServices(data || []);
+    setReady(true);
   }, [sb, business.id]);
   useEffect(() => { load(); }, [load]);
 
@@ -51,18 +55,25 @@ export default function ServicesTab({ business }) {
         <button className="btn btn-primary">{editing ? "Guardar cambios" : "Guardar servicio"}</button>
         {editing && <button type="button" className="btn" onClick={() => { setEditing(null); setForm(EMPTY); }}>Cancelar edición</button>}
       </form>
-      <div className="entity-list">
-        {services.map((s) => (
-          <div className="entity-row" key={s.id} style={s.active ? undefined : { opacity: 0.55 }}>
-            <div><b>{s.name}</b>{!s.active && " (inactivo)"}<p>{s.description} · {s.duration_minutes} min · {money(s.price)}</p></div>
-            <div style={{ display: "flex", gap: 8 }}>
-              <button className="btn" onClick={() => edit(s)}>Editar</button>
-              <button className={s.active ? "btn btn-danger" : "btn"} onClick={() => toggle(s)}>{s.active ? "Desactivar" : "Reactivar"}</button>
-            </div>
-          </div>
-        ))}
-        {!services.length && <p className="empty">Aún no hay servicios.</p>}
-      </div>
+      {!ready ? <SkeletonCards cards={6} /> : (
+        <div className="card-grid">
+          {services.map((s) => (
+            <article className={s.active ? "service-admin" : "service-admin is-off"} key={s.id}>
+              <div className="service-art"><Icon name={serviceIcon(s.name)} size={30} stroke={1.4} /></div>
+              <div className="service-admin-body">
+                <div className="service-admin-top"><h3>{s.name}</h3><span className={s.active ? "pill ok" : "pill off"}>{s.active ? "Activo" : "Inactivo"}</span></div>
+                <p>{s.description || "Sin descripción"}</p>
+                <div className="service-admin-meta"><strong>{money(s.price)}</strong><span><Icon name="clock" size={14} /> {s.duration_minutes} min</span></div>
+                <div className="person-actions">
+                  <button className="btn" onClick={() => edit(s)}>Editar</button>
+                  <button className={s.active ? "btn btn-danger" : "btn"} onClick={() => toggle(s)}>{s.active ? "Desactivar" : "Reactivar"}</button>
+                </div>
+              </div>
+            </article>
+          ))}
+          {!services.length && <p className="empty">Aún no hay servicios.</p>}
+        </div>
+      )}
     </>
   );
 }

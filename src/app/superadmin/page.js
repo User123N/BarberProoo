@@ -23,13 +23,12 @@ export default async function SuperadminPage() {
     <>
       <header className="shell topbar"><Brand /><div className="top-actions"><span className="muted user-email">{user.email}</span><SignOutButton /></div></header>
       <main className="shell dashboard-shell">
-        <div className="eyebrow">PLATAFORMA</div>
-        <h1>Barberías</h1>
+        <div className="platform-head"><div><div className="eyebrow">Plataforma</div><h1>Barberías</h1></div><span className="pill ok">Superadministrador</span></div>
         {error && <div className="error-box">{error.message}</div>}
         <div className="stats-row">
           <div className="stat-card"><span>Registradas</span><strong>{businesses?.length || 0}</strong></div>
-          <div className="stat-card"><span>Activas</span><strong>{by("active")}</strong></div>
-          <div className="stat-card"><span>Suspendidas</span><strong>{by("suspended")}</strong></div>
+          <div className="stat-card stat-ok"><span>Activas</span><strong>{by("active")}</strong></div>
+          <div className="stat-card stat-bad"><span>Suspendidas</span><strong>{by("suspended")}</strong></div>
           <div className="stat-card"><span>Reservas (global)</span><strong>{appts.count || 0}</strong></div>
         </div>
         <BusinessTable initial={businesses || []} />

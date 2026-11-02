@@ -12,7 +12,7 @@ export default async function Setup() {
     <main className="shell setup-page">
       <Link className="brand" href="/">BARBER<span>PRO</span></Link>
       <div className="feature">
-        <div className="eyebrow">CONFIGURACIÓN INICIAL</div>
+        <div className="eyebrow">Configuración inicial</div>
         <h1>Vincular tu primera barbería</h1>
         <p>Para evitar que cualquiera cree negocios o se asigne permisos, el primer negocio se crea desde el SQL Editor de Supabase.</p>
         <ol>

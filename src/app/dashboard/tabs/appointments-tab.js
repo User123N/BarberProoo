@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatInTz } from "@/lib/tz";
 import { isStaff } from "@/lib/roles";
+import { SkeletonRows } from "@/components/Skeleton";
 
 const PAGE = 20;
 const LABEL = { pending: "Pendiente", confirmed: "Confirmada", completed: "Completada", cancelled: "Cancelada", no_show: "No asistió" };
@@ -59,31 +60,30 @@ export default function AppointmentsTab({ business, role }) {
     <>
       <div className="stats-row">
         <div className="stat-card"><span>Reservas totales</span><strong>{counts.all}</strong></div>
-        <div className="stat-card"><span>Pendientes</span><strong>{counts.pending}</strong></div>
-        <div className="stat-card"><span>Confirmadas</span><strong>{counts.confirmed}</strong></div>
+        <div className="stat-card stat-wait"><span>Pendientes</span><strong>{counts.pending}</strong></div>
+        <div className="stat-card stat-ok"><span>Confirmadas</span><strong>{counts.confirmed}</strong></div>
       </div>
       {error && <div className="error-box">{error}</div>}
-      <div style={{ margin: "14px 0", display: "flex", gap: 10, alignItems: "center" }}>
-        <label className="muted" style={{ fontSize: 13 }}>Estado{" "}
-          <select value={filter} onChange={(e) => { setPage(0); setFilter(e.target.value); }}>
-            <option value="all">Todos</option>
-            {Object.entries(LABEL).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-          </select>
-        </label>
+      <div className="toolbar">
+        <div className="chip-row" role="group" aria-label="Filtrar por estado">
+          {[["all", "Todas"], ...Object.entries(LABEL)].map(([k, v]) => (
+            <button key={k} type="button" className={filter === k ? "chip active" : "chip"} onClick={() => { setPage(0); setFilter(k); }}>{v}</button>
+          ))}
+        </div>
         <button className="btn btn-outline" onClick={load}>Actualizar</button>
       </div>
-      <div className="table-card"><div className="table-scroll">
+      <div className="table-card"><div className="table-scroll stack-table">
         <table>
           <thead><tr><th>Cliente</th><th>Servicio</th><th>Barbero</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
           <tbody>
             {rows.map((a) => (
               <tr key={a.id}>
-                <td><b>{a.customer?.full_name || "Cliente"}</b>{isStaff(role) && <small>{a.customer?.phone}</small>}</td>
-                <td>{a.appointment_items?.map((x) => x.service_name).join(", ")}</td>
-                <td>{a.barber?.display_name}</td>
-                <td>{formatInTz(a.starts_at, business.timezone)}</td>
-                <td><span className={`status ${a.status}`}>{LABEL[a.status]}</span></td>
-                <td>
+                <td data-label="Cliente"><span className="who"><span className="avatar">{(a.customer?.full_name || "C").slice(0, 1).toUpperCase()}</span><span><b>{a.customer?.full_name || "Cliente"}</b>{isStaff(role) && <small>{a.customer?.phone}</small>}</span></span></td>
+                <td data-label="Servicio">{a.appointment_items?.map((x) => x.service_name).join(", ")}</td>
+                <td data-label="Barbero">{a.barber?.display_name}</td>
+                <td data-label="Fecha">{formatInTz(a.starts_at, business.timezone)}</td>
+                <td data-label="Estado"><span className={`status ${a.status}`}>{LABEL[a.status]}</span></td>
+                <td data-label="Acción">
                   <div className="appointment-actions"><select value={a.status} onChange={(e) => setStatus(a.id, e.target.value)}>
                     {!options.includes(a.status) && <option value={a.status} disabled>{LABEL[a.status]}</option>}
                     {options.map((k) => <option key={k} value={k}>{LABEL[k]}</option>)}
@@ -93,10 +93,10 @@ export default function AppointmentsTab({ business, role }) {
             ))}
           </tbody>
         </table>
-        {loading && <p className="empty">Cargando…</p>}
+        {loading && <SkeletonRows rows={4} />}
         {!loading && !rows.length && <p className="empty">No hay reservas para mostrar.</p>}
       </div></div>
-      <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 12 }}>
+      <div className="pager">
         <button className="btn" disabled={page === 0} onClick={() => setPage(page - 1)}>← Anterior</button>
         <span className="muted">Página {page + 1} de {pages}</span>
         <button className="btn" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>Siguiente →</button>

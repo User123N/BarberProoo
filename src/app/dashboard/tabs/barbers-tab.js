@@ -1,6 +1,8 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import Icon from "@/components/Icons";
+import { SkeletonCards } from "@/components/Skeleton";
 
 export default function BarbersTab({ business }) {
   const sb = useMemo(() => createClient(), []);
@@ -13,6 +15,7 @@ export default function BarbersTab({ business }) {
   const [picked, setPicked] = useState([]);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const [ready, setReady] = useState(false);
 
   const load = useCallback(async () => {
     const [b, s, l] = await Promise.all([
@@ -22,7 +25,7 @@ export default function BarbersTab({ business }) {
     ]);
     const err = b.error || s.error || l.error;
     if (err) setError(err.message);
-    setBarbers(b.data || []); setServices(s.data || []); setLinks(l.data || []);
+    setBarbers(b.data || []); setServices(s.data || []); setLinks(l.data || []); setReady(true);
   }, [sb, business.id]);
   useEffect(() => { load(); }, [load]);
 
@@ -65,43 +68,61 @@ export default function BarbersTab({ business }) {
     setInfo("Servicios actualizados."); setOpen(null); load();
   }
 
+  const active = barbers.filter((b) => b.active).length;
   return (
     <>
       {error && <div className="error-box">{error}</div>}
       {info && <p className="form-message" role="status">{info}</p>}
+      <div className="tab-summary"><b>{active}</b> activos de <b>{barbers.length}</b> barberos</div>
       <form className="inline-form" onSubmit={add}>
         <h3>Agregar barbero</h3>
         <input required placeholder="Nombre del barbero" value={name} onChange={(e) => setName(e.target.value)} />
-        <input placeholder="Biografía (opcional)" value={bio} onChange={(e) => setBio(e.target.value)} />
-        <button className="btn btn-primary">Agregar</button>
+        <input placeholder="Especialidad o biografía (opcional)" value={bio} onChange={(e) => setBio(e.target.value)} />
+        <button className="btn btn-primary"><Icon name="plus" size={16} /> Agregar</button>
       </form>
       <p className="muted" style={{ fontSize: 13 }}>Un barbero nuevo no tiene horario: configúralo en la pestaña “Horarios” para que pueda recibir reservas.</p>
-      <div className="entity-list">
-        {barbers.map((b) => (
-          <div key={b.id}>
-            <div className="entity-row" style={b.active ? undefined : { opacity: 0.55 }}>
-              <div className="barber-admin-identity">{b.photo_url ? <img src={b.photo_url} alt=""/> : <span className="barber-admin-placeholder">{b.display_name.slice(0,1).toUpperCase()}</span>}<div><b>{b.display_name}</b><p>{b.active ? "Activo" : "Inactivo"} · {links.some((x) => x.barber_id === b.id) ? "servicios asignados" : "realiza todos los servicios"}</p><label className="mini-upload">Cambiar foto<input type="file" accept="image/*" onChange={e=>uploadPhoto(b,e.target.files?.[0])}/></label></div></div>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button className="btn" onClick={() => openServices(b)}>Servicios</button>
-                <button className={b.active ? "btn btn-danger" : "btn"} onClick={() => toggle(b)}>{b.active ? "Desactivar" : "Reactivar"}</button>
-              </div>
-            </div>
-            {open === b.id && (
-              <div className="feature" style={{ marginTop: 8 }}>
-                <p className="muted" style={{ fontSize: 13 }}>Marca los servicios que realiza. Sin ninguno marcado, realiza todos.</p>
-                {services.map((s) => (
-                  <label key={s.id} style={{ display: "block", margin: "6px 0" }}>
-                    <input type="checkbox" checked={picked.includes(s.id)}
-                      onChange={(e) => setPicked(e.target.checked ? [...picked, s.id] : picked.filter((x) => x !== s.id))} /> {s.name}
-                  </label>
-                ))}
-                <button className="btn primary" onClick={() => saveServices(b.id)} style={{ marginTop: 10 }}>Guardar servicios</button>
-              </div>
-            )}
-          </div>
-        ))}
-        {!barbers.length && <p className="empty">Aún no hay barberos.</p>}
-      </div>
+      {!ready ? <SkeletonCards cards={3} /> : (
+        <div className="card-grid">
+          {barbers.map((b) => {
+            const mine = links.filter((x) => x.barber_id === b.id);
+            const names = mine.map((x) => services.find((s) => s.id === x.service_id)?.name).filter(Boolean);
+            return (
+              <article className={b.active ? "person-card" : "person-card is-off"} key={b.id}>
+                <div className="person-photo">
+                  {b.photo_url ? <img src={b.photo_url} alt={b.display_name} loading="lazy" decoding="async" /> : <span className="person-mono">{b.display_name.slice(0, 1).toUpperCase()}</span>}
+                  <span className={b.active ? "pill ok" : "pill off"}>{b.active ? "Activo" : "Inactivo"}</span>
+                  <label className="photo-edit" title="Cambiar foto"><Icon name="plus" size={16} /><input type="file" accept="image/*" onChange={(e) => uploadPhoto(b, e.target.files?.[0])} /></label>
+                </div>
+                <div className="person-body">
+                  <h3>{b.display_name}</h3>
+                  <p>{b.bio || "Barbero profesional"}</p>
+                  <div className="chips">
+                    {names.length ? names.slice(0, 3).map((n) => <span key={n}>{n}</span>) : <span>Realiza todos los servicios</span>}
+                    {names.length > 3 && <span>+{names.length - 3}</span>}
+                  </div>
+                  <div className="person-actions">
+                    <button className="btn" onClick={() => openServices(b)}>Servicios</button>
+                    <button className={b.active ? "btn btn-danger" : "btn"} onClick={() => toggle(b)}>{b.active ? "Desactivar" : "Reactivar"}</button>
+                  </div>
+                  {open === b.id && (
+                    <div className="picker-pop">
+                      <p className="muted" style={{ fontSize: 13, margin: "0 0 8px" }}>Marca los servicios que realiza. Sin ninguno marcado, realiza todos.</p>
+                      {services.map((s) => (
+                        <label key={s.id} className="pick-line">
+                          <input type="checkbox" checked={picked.includes(s.id)}
+                            onChange={(e) => setPicked(e.target.checked ? [...picked, s.id] : picked.filter((x) => x !== s.id))} /> {s.name}
+                        </label>
+                      ))}
+                      <button className="btn primary" onClick={() => saveServices(b.id)} style={{ marginTop: 10 }}>Guardar servicios</button>
+                    </div>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+          {!barbers.length && <p className="empty">Aún no hay barberos.</p>}
+        </div>
+      )}
     </>
   );
 }

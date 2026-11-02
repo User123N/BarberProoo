@@ -48,7 +48,7 @@ export default async function DashboardPage({ searchParams }) {
               : <div className="empty-state"><h1>Cuenta suspendida</h1><p>Esta barbería está suspendida. Contacta al soporte de BarberPro.</p></div>
           ) : (
             <div className="empty-state">
-              <div className="eyebrow">BARBERPRO · CONFIGURACIÓN</div>
+              <div className="eyebrow">Configuración inicial</div>
               <h1>Tu espacio está listo para comenzar.</h1>
               <p>Tu usuario inició sesión, pero todavía no está vinculado a una barbería.</p>
               <Link className="btn btn-primary" href="/setup">Ver instrucciones de configuración</Link>
