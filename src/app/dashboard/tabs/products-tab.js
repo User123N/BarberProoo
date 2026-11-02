@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import "./products-tab.css";
 const empty = {name:"",description:"",category:"",price:"",compare_at_price:"",stock:"",image_url:"",featured:false,active:true};
 const money = v => "$"+Number(v||0).toLocaleString("es-CO");
 export default function ProductsTab({business}) {
