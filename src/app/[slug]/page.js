@@ -17,15 +17,19 @@ export default async function PublicBusinessPage({ params }) {
     .eq("slug", slug).eq("status", "active").maybeSingle();
   if (!business) notFound();
 
-  const [{ data: services }, { data: barbers }, { data: gallery }] = await Promise.all([
+  const [{ data: services }, { data: barbers }, { data: gallery }, { data: products }] = await Promise.all([
     sb.from("services").select("id,name,description,price,duration_minutes,image_url")
       .eq("business_id", business.id).eq("active", true).order("created_at"),
     sb.from("barbers").select("id,display_name,bio,photo_url")
       .eq("business_id", business.id).eq("active", true).order("created_at"),
     sb.from("gallery_images").select("id,media_url,media_type,description,position")
-      .eq("business_id", business.id).eq("active", true).order("position")
+      .eq("business_id", business.id).eq("active", true).order("position"),
+    sb.from("products").select("id,name,description,category,price,compare_at_price,image_url,featured,stock")
+      .eq("business_id", business.id).eq("active", true).order("featured", { ascending: false }).order("position").order("created_at", { ascending: false })
   ]);
 
+  const whatsappNumber = (business.phone || "").replace(/\D/g, "").replace(/^0+/, "");
+  const whatsapp = whatsappNumber ? (whatsappNumber.startsWith("57") ? whatsappNumber : "57" + whatsappNumber) : "";
   const mapQuery = business.latitude != null && business.longitude != null
     ? `${business.latitude},${business.longitude}`
     : [business.address, business.city].filter(Boolean).join(", ") || [business.name, business.city].filter(Boolean).join(", ");
@@ -66,6 +70,23 @@ export default async function PublicBusinessPage({ params }) {
           {!services?.length && <p className="muted">Pronto publicaremos nuestros servicios.</p>}
         </div>
       </section>
+
+      {!!products?.length && <section className="public-section public-products">
+        <div className="shell">
+          <div className="public-products-head"><div className="eyebrow">Tienda de la barbería</div><h2>Productos para llevar tu estilo más lejos.</h2><p>Descubre nuestra selección de cuidado personal y productos profesionales. Haz tu pedido directamente por WhatsApp.</p></div>
+          <div className="public-products-grid">{products.map(product => {
+            const message = "Hola, quiero comprar este producto de " + business.name + ": " + product.name + " - $" + Number(product.price).toLocaleString("es-CO") + ". ¿Me das más información?";
+            const orderUrl = whatsapp ? "https://wa.me/" + whatsapp + "?text=" + encodeURIComponent(message) : "";
+            return <article className="public-product-card" key={product.id}>
+              <div className="public-product-photo">{product.image_url ? <img src={product.image_url} alt={product.name} loading="lazy"/> : <span>✦</span>}{product.featured && <b>RECOMENDADO</b>}</div>
+              <div className="public-product-info">{product.category && <small>{product.category}</small>}<h3>{product.name}</h3><p>{product.description || "Calidad profesional para cuidar tu estilo."}</p>
+                <div className="public-product-price"><strong>{"$" + Number(product.price).toLocaleString("es-CO")}</strong>{product.compare_at_price > product.price && <del>{"$" + Number(product.compare_at_price).toLocaleString("es-CO")}</del>}</div>
+                {product.stock === 0 ? <span className="muted">Agotado</span> : orderUrl ? <a className="public-product-buy" href={orderUrl} target="_blank" rel="noopener noreferrer">Pedir por WhatsApp <span>↗</span></a> : <span className="muted">WhatsApp no configurado</span>}
+              </div>
+            </article>;
+          })}</div>
+        </div>
+      </section>}
 
       <section className="shell public-section">
         <div className="section-heading"><div><div className="eyebrow">El equipo</div><h2>Conoce a tus barberos</h2></div></div>
