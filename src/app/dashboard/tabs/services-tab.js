@@ -13,7 +13,8 @@ export default function ServicesTab({ business }) {
   const [form, setForm] = useState(EMPTY);
   const [editing, setEditing] = useState(null);
   const [error, setError] = useState("");
-  const [ready, setReady] = useState(false);\n  const [uploading, setUploading] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const load = useCallback(async () => {
     const { data, error: err } = await sb.from("services").select("*").eq("business_id", business.id).order("created_at");
@@ -38,7 +39,20 @@ export default function ServicesTab({ business }) {
     if (err) setError(err.message); else load();
   }
 
-  async function uploadImage(file) {\n    if (!file) return;\n    if (!file.type.startsWith("image/")) return setError("Selecciona una imagen.");\n    if (file.size > 5 * 1024 * 1024) return setError("La imagen no puede superar 5 MB.");\n    setUploading(true); setError("");\n    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");\n    const path = `${business.id}/services/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;\n    const { error: upErr } = await sb.storage.from("barberpro-media").upload(path, file, { contentType: file.type });\n    if (upErr) setError(upErr.message);\n    else { const { data } = sb.storage.from("barberpro-media").getPublicUrl(path); setForm((f) => ({ ...f, image_url: data.publicUrl })); }\n    setUploading(false);\n  }\n\n  function edit(s) {
+  async function uploadImage(file) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setError("Selecciona una imagen.");
+    if (file.size > 5 * 1024 * 1024) return setError("La imagen no puede superar 5 MB.");
+    setUploading(true); setError("");
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `${business.id}/services/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error: upErr } = await sb.storage.from("barberpro-media").upload(path, file, { contentType: file.type });
+    if (upErr) setError(upErr.message);
+    else { const { data } = sb.storage.from("barberpro-media").getPublicUrl(path); setForm((f) => ({ ...f, image_url: data.publicUrl })); }
+    setUploading(false);
+  }
+
+  function edit(s) {
     setEditing(s.id);
     setForm({ name: s.name, description: s.description || "", price: String(s.price), duration_minutes: s.duration_minutes, image_url: s.image_url || "" });
   }
@@ -51,7 +65,8 @@ export default function ServicesTab({ business }) {
         <input required placeholder="Nombre" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         <input placeholder="Descripción" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         <input required type="number" min="0" placeholder="Precio COP" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-        <input required type="number" min="5" step="5" placeholder="Minutos" value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} />\n        <label className="service-image-picker">Imagen del servicio (opcional)<input type="file" accept="image/*" onChange={(e) => uploadImage(e.target.files?.[0])} />{form.image_url && <img src={form.image_url} alt="Vista previa" />}</label>
+        <input required type="number" min="5" step="5" placeholder="Minutos" value={form.duration_minutes} onChange={(e) => setForm({ ...form, duration_minutes: e.target.value })} />
+        <label className="service-image-picker">Imagen del servicio (opcional)<input type="file" accept="image/*" onChange={(e) => uploadImage(e.target.files?.[0])} />{form.image_url && <img src={form.image_url} alt="Vista previa" />}</label>
         <button className="btn btn-primary" disabled={uploading}>{uploading ? "Subiendo imagen…" : editing ? "Guardar cambios" : "Guardar servicio"}</button>
         {editing && <button type="button" className="btn" onClick={() => { setEditing(null); setForm(EMPTY); }}>Cancelar edición</button>}
       </form>
