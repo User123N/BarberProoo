@@ -14,7 +14,7 @@ export default async function SuperadminPage() {
   if (me?.platform_role !== "superadmin") notFound();
 
   const [{ data: businesses, error }, appts] = await Promise.all([
-    sb.from("businesses").select("id,name,slug,status,city,description,logo_url,cover_url,created_at").order("created_at", { ascending: false }).limit(200),
+    sb.from("businesses").select("id,name,slug,status,city,phone,description,logo_url,cover_url,created_at").order("created_at", { ascending: false }).limit(200),
     sb.from("appointments").select("id", { count: "exact", head: true })
   ]);
   const by = (st) => (businesses || []).filter((b) => b.status === st).length;
