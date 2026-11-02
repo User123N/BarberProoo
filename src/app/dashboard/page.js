@@ -15,7 +15,7 @@ export default async function DashboardPage({ searchParams }) {
 
   const { data: memberships, error } = await sb
     .from("business_members")
-    .select("role,business:businesses(id,name,slug,status,timezone,description,logo_url,cover_url,phone,address,city)")
+    .select("role,business:businesses(id,name,slug,status,timezone,description,logo_url,cover_url,phone,address,city,latitude,longitude)")
     .eq("user_id", user.id)
     .eq("active", true);
 
