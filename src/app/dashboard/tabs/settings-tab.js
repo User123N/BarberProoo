@@ -57,7 +57,7 @@ export default function SettingsTab({ business }) {
     if (file.size > (isVideo ? 50 : 5) * 1024 * 1024) return setError(isVideo ? "El video no puede superar 50 MB." : "La imagen no puede superar 5 MB.");
     setUploading("gallery"); setError(""); setInfo("");
     const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase().replace(/[^a-z0-9]/g, "");
-    const path = `${business.id}/gallery/${Date.now()}-${crypto.randomUUID() || "media"}.${ext}`;
+    const path = `${business.id}/gallery/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const { error: upErr } = await sb.storage.from("barberpro-media").upload(path, file, { contentType: file.type });
     if (upErr) { setError(upErr.message); setUploading(""); return; }
     const { data: publicData } = sb.storage.from("barberpro-media").getPublicUrl(path);
