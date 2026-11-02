@@ -9,7 +9,8 @@ export const canEditSettings = (role) => ["owner", "admin"].includes(role);
 export function tabsFor(role) {
   const tabs = [["appointments", "Citas"]];
   if (isStaff(role)) tabs.push(["customers", "Clientes"]);
-  if (canManage(role)) tabs.push(["services", "Servicios"], ["products", "Productos"], ["barbers", "Barberos"], ["hours", "Horarios"]);
+  if (canManage(role)) tabs.push(["services", "Servicios"], ["barbers", "Barberos"], ["hours", "Horarios"]);
+  if (canEditSettings(role)) tabs.push(["products", "Productos"]);
   if (canEditSettings(role)) tabs.push(["settings", "Ajustes"]);
   return tabs;
 }
