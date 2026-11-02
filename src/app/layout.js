@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./dashboard/tabs/products-tab.css";
 import "./premium.css";
 import "./public-media.css";
 import { DM_Sans, Manrope, Fraunces } from "next/font/google";
