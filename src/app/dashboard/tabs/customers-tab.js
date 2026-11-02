@@ -13,7 +13,8 @@ export default function CustomersTab({ business }) {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);\n  const [uploadingId, setUploadingId] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [uploadingId, setUploadingId] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true); setError("");
@@ -27,7 +28,24 @@ export default function CustomersTab({ business }) {
   }, [sb, business.id, page, search]);
 
   useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
-  const pages = Math.max(1, Math.ceil(total / PAGE));\n\n  async function uploadCustomerPhoto(customer, file) {\n    if (!file) return;\n    if (!file.type.startsWith("image/")) return setError("Selecciona una imagen.");\n    if (file.size > 5 * 1024 * 1024) return setError("La foto no puede superar 5 MB.");\n    setUploadingId(customer.id); setError("");\n    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");\n    const path = `${business.id}/customers/${customer.id}-${Date.now()}.${ext}`;\n    const { error: upErr } = await sb.storage.from("barberpro-media").upload(path, file, { contentType: file.type });\n    if (upErr) setError(upErr.message);\n    else {\n      const { data } = sb.storage.from("barberpro-media").getPublicUrl(path);\n      const { error: saveErr } = await sb.from("customers").update({ photo_url: data.publicUrl }).eq("id", customer.id).eq("business_id", business.id);\n      if (saveErr) setError(saveErr.message); else setRows((old) => old.map((row) => row.id === customer.id ? { ...row, photo_url: data.publicUrl } : row));\n    }\n    setUploadingId("");\n  }
+  const pages = Math.max(1, Math.ceil(total / PAGE));
+
+  async function uploadCustomerPhoto(customer, file) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setError("Selecciona una imagen.");
+    if (file.size > 5 * 1024 * 1024) return setError("La foto no puede superar 5 MB.");
+    setUploadingId(customer.id); setError("");
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `${business.id}/customers/${customer.id}-${Date.now()}.${ext}`;
+    const { error: upErr } = await sb.storage.from("barberpro-media").upload(path, file, { contentType: file.type });
+    if (upErr) setError(upErr.message);
+    else {
+      const { data } = sb.storage.from("barberpro-media").getPublicUrl(path);
+      const { error: saveErr } = await sb.from("customers").update({ photo_url: data.publicUrl }).eq("id", customer.id).eq("business_id", business.id);
+      if (saveErr) setError(saveErr.message); else setRows((old) => old.map((row) => row.id === customer.id ? { ...row, photo_url: data.publicUrl } : row));
+    }
+    setUploadingId("");
+  }
 
   return (
     <>
