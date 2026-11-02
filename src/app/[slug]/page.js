@@ -90,7 +90,9 @@ export default async function PublicBusinessPage({ params }) {
           <a className="btn btn-outline" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`} target="_blank" rel="noopener noreferrer">Abrir en Google Maps ↗</a>
         </div>
         <div className="location-map"><iframe title={`Ubicación de ${business.name}`} src={mapUrl} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div>
-      </section>\n\n      <section className="shell public-section booking-layout" id="reservar">
+      </section>
+
+      <section className="shell public-section booking-layout" id="reservar">
         <div className="booking-copy"><div className="eyebrow">Tu próximo look comienza aquí</div><h2>Reserva sin llamadas ni esperas.</h2>
           <p>Elige tu servicio y tu profesional, y escoge entre los horarios realmente disponibles. Recibirás un código para consultar, cancelar o reprogramar.</p>
           <div className="booking-perk">✓ Reserva en pocos pasos</div><div className="booking-perk">✓ Precios y duración visibles</div><div className="booking-perk">✓ Consulta, cancela o reprograma con tu código</div>
