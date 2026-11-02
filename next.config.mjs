@@ -12,6 +12,8 @@ const securityHeaders = [
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self'",
+    "frame-src 'self' https://www.google.com https://maps.google.com",
+    "manifest-src 'self'",
     "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
