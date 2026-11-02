@@ -37,7 +37,7 @@ export default function CustomersTab({ business }) {
     setUploadingId(customer.id); setError("");
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
     const path = `${business.id}/customers/${customer.id}-${Date.now()}.${ext}`;
-    const { error: upErr } = await sb.storage.from("barberpro-media").upload(path, file, { contentType: file.type });
+    const { error: upErr } = await sb.storage.from("barberpro-private").upload(path, file, { contentType: file.type });
     if (upErr) setError(upErr.message);
     else {
       const { data } = sb.storage.from("barberpro-media").getPublicUrl(path);
