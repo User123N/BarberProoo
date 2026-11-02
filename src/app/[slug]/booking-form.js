@@ -82,13 +82,22 @@ export default function BookingForm({ slug, services, barbers, timezone }) {
 
   return (
     <form className="booking-card" onSubmit={submit}>
-      <div className="eyebrow">RESERVA EN LÍNEA</div>
+      <div className="eyebrow">Reserva en línea</div>
       <h2>Agenda tu visita</h2>
-      <label>Servicio
-        <select required value={service} onChange={(e) => setService(e.target.value)}>
-          {services.map((s) => <option key={s.id} value={s.id}>{s.name} · {money(s.price)} · {s.duration_minutes} min</option>)}
-        </select>
-      </label>
+      <ol className="booking-steps" aria-label="Progreso de la reserva">
+        {[["Servicio", !!service], ["Profesional", true], ["Fecha y hora", !!slot], ["Tus datos", !!slot && name.length > 1 && phone.length > 6]].map(([label, ok]) => (
+          <li key={label} className={ok ? "done" : ""}>{label}</li>
+        ))}
+      </ol>
+      <div className="service-picker" role="radiogroup" aria-label="Servicio">
+        {services.map((s) => (
+          <button type="button" key={s.id} role="radio" aria-checked={service === s.id}
+            className={service === s.id ? "service-option active" : "service-option"} onClick={() => setService(s.id)}>
+            <span>{s.name}<small>{s.duration_minutes} min</small></span>
+            <strong>{money(s.price)}</strong>
+          </button>
+        ))}
+      </div>
       <label>Profesional
         <select value={barber} onChange={(e) => setBarber(e.target.value)}>
           <option value="">Cualquier profesional disponible</option>

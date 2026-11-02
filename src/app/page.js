@@ -1,13 +1,21 @@
 import Link from "next/link";
 import Brand from "@/components/Brand";
+import HeroScene from "@/components/HeroScene";
 
-const available = [
-  ["◷", "Reservas con horarios reales", "El cliente sólo ve horas libres: respeta el horario de cada barbero, turnos con almuerzo, festivos, bloqueos y la duración del servicio."],
-  ["✂", "Equipo y servicios", "Barberos con horario propio, servicios asignados por barbero, precios y duraciones editables."],
-  ["◎", "Clientes", "Directorio con búsqueda e historial de reservas, visible según el rol de cada persona."],
-  ["▤", "Panel por roles", "Propietario, administrador, gerente, recepción y barbero ven y hacen sólo lo que les corresponde."],
-  ["⌁", "Código de reserva", "Tus clientes consultan, cancelan o reprograman con su código y teléfono, según las reglas de tu negocio."],
-  ["◆", "Multiempresa segura", "Cada barbería está aislada de las demás con políticas a nivel de base de datos."]
+const features = [
+  { id: "agenda", size: "wide", title: "Horarios reales, sin cruces", text: "El cliente sólo ve horas libres. Se respeta el horario de cada barbero, los turnos con almuerzo, los festivos, los bloqueos y la duración del servicio." },
+  { id: "equipo", title: "Equipo y servicios", text: "Cada barbero con su horario y sus servicios asignados, con precios y duraciones editables." },
+  { id: "clientes", title: "Clientes con historial", text: "Directorio con búsqueda y reservas anteriores, visible según el rol de cada persona." },
+  { id: "roles", size: "tall", title: "Un panel para cada rol", text: "Propietario, administrador, gerente, recepción y barbero ven y hacen sólo lo que les corresponde." },
+  { id: "codigo", title: "Código de reserva", text: "Tus clientes consultan, cancelan o reprograman con su código y su teléfono, según las reglas de tu negocio." },
+  { id: "tenant", size: "wide", title: "Cada barbería, aislada", text: "Los datos de un negocio nunca se mezclan con los de otro: el aislamiento está en la base de datos, no sólo en la pantalla." }
+];
+
+const sample = [
+  ["09:00", "Corte clásico", "Confirmada", "ok"],
+  ["10:00", "Barba y toalla caliente", "Pendiente", "wait"],
+  ["11:30", "Corte y perfilado", "Confirmada", "ok"],
+  ["12:30", "Almuerzo", "Bloqueado", "off"]
 ];
 
 export default function Home() {
@@ -15,46 +23,85 @@ export default function Home() {
     <>
       <header className="shell topbar">
         <Brand />
-        <nav style={{ display: "flex", gap: 18, alignItems: "center", fontSize: 13 }}>
-          <a className="muted" href="#funciones">Funciones</a>
-          <Link className="muted" href="/reserva">Mi reserva</Link>
+        <nav className="top-actions">
+          <a className="nav-link" href="#funciones">Funciones</a>
+          <a className="nav-link" href="#agenda">Agenda</a>
+          <Link className="nav-link" href="/reserva">Mi reserva</Link>
           <Link className="btn" href="/login">Acceder</Link>
         </nav>
       </header>
-      <main className="shell">
-        <section className="hero">
-          <div>
-            <div className="eyebrow">La nueva forma de gestionar tu barbería</div>
-            <h1>Tu barbería.<br /><span>Tu agenda.</span><br />Todo en orden.</h1>
-            <p className="lead">Reservas online sin cruces de horario, control de tu equipo y de tus clientes en una plataforma pensada para barberías.</p>
+
+      <main>
+        <section className="shell hero">
+          <div className="hero-copy">
+            <p className="hero-kicker">Reservas y gestión para barberías</p>
+            <h1>La agenda de tu barbería, sin un solo cruce de horarios.</h1>
+            <p className="lead">Tus clientes reservan en segundos, tu equipo ve su día en una vista y tú controlas servicios, clientes y pagos desde un mismo lugar.</p>
             <div className="actions">
-              <Link className="btn primary" href="/login">Entrar al panel →</Link>
-              <a className="btn" href="#funciones">Explorar funciones</a>
+              <Link className="btn primary" href="/login">Entrar al panel</Link>
+              <a className="btn ghost" href="#agenda">Ver cómo funciona</a>
             </div>
           </div>
-          <div className="hero-card hero-visual">
-            <div className="visual-topline"><span className="eyebrow">BARBER EXPERIENCE · 01</span><span className="visual-live">● SISTEMA ACTIVO</span></div>
-            <div className="barber-3d-scene" aria-hidden="true"><div className="scene-ring ring-one"/><div className="scene-ring ring-two"/><div className="clipper-3d"><div className="clipper-head"/><div className="clipper-body"/><div className="clipper-grip"/><div className="clipper-switch"/></div><div className="scene-star">✦</div></div>
-            <div className="visual-caption"><div><div className="eyebrow">GESTIÓN INTELIGENTE</div><h2>Tu negocio, en otro nivel.</h2><p>Agenda, equipo y clientes en perfecta sincronía.</p></div><div className="visual-number">BP<span> / 01</span></div></div>
+          <HeroScene />
+        </section>
+
+        <section className="shell agenda-preview" id="agenda">
+          <div className="agenda-copy">
+            <h2>Tu día completo, de un vistazo.</h2>
+            <p>Citas pendientes, confirmadas y bloqueos con un color propio cada una. Mueve una cita a otra hora arrastrándola.</p>
+            <small className="sample-note">Vista de ejemplo con datos ficticios.</small>
+          </div>
+          <div className="agenda-glass" role="img" aria-label="Ejemplo de agenda diaria con cuatro citas">
+            <div className="agenda-glass-head"><b>Hoy</b><span>3 citas · 1 bloqueo</span></div>
+            {sample.map(([time, name, status, tone]) => (
+              <div className={`agenda-row tone-${tone}`} key={time}>
+                <time>{time}</time>
+                <span>{name}</span>
+                <em>{status}</em>
+              </div>
+            ))}
           </div>
         </section>
-        <section className="showcase-strip"><div className="showcase-image"><img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=900&q=82" alt="Interior de una barbería moderna" loading="lazy"/><span>01 / THE SPACE</span></div><div className="showcase-copy"><div className="eyebrow">DISEÑADO PARA PROFESIONALES</div><h2>Una experiencia que se siente tan bien como se ve.</h2><p>Una plataforma para ordenar el día a día, elevar la atención y proyectar una marca profesional.</p><div className="showcase-points"><span>✦ Agenda clara</span><span>✦ Equipo organizado</span><span>✦ Marca propia</span></div></div></section>
-        <section className="section" id="funciones">
-          <div className="eyebrow">Disponible hoy</div>
-          <h2 className="section-title">Lo esencial, bien hecho.</h2>
-          <div className="grid">
-            {available.map(([icon, title, description]) => (
-              <article className="feature" key={title}>
-                <div className="iconbox">{icon}</div>
-                <h3>{title}</h3>
-                <p>{description}</p>
+
+        <section className="shell features" id="funciones">
+          <h2>Lo esencial, bien resuelto.</h2>
+          <div className="bento">
+            {features.map((f) => (
+              <article className={`bento-item ${f.size || ""}`} key={f.id}>
+                <h3>{f.title}</h3>
+                <p>{f.text}</p>
               </article>
             ))}
           </div>
         </section>
-        <section className="visual-gallery"><div className="eyebrow">EL UNIVERSO BARBERPRO</div><h2 className="section-title">Cada detalle cuenta.</h2><div className="gallery-tiles"><figure><img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=900&q=82" alt="Herramientas profesionales de barbería" loading="lazy"/><figcaption>PRECISIÓN</figcaption></figure><figure><img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=900&q=82" alt="Trabajo profesional de barbería" loading="lazy"/><figcaption>ESTILO</figcaption></figure><figure><img src="https://images.unsplash.com/photo-1593702295094-aea8c6c7e1d7?auto=format&fit=crop&w=900&q=82" alt="Sillón de barbería" loading="lazy"/><figcaption>EXPERIENCIA</figcaption></figure></div></section>
+
+        <section className="shell gallery">
+          <figure className="g-main">
+            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1100&q=80" alt="Interior de una barbería moderna" width="1100" height="760" loading="lazy" decoding="async" />
+          </figure>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=700&q=80" alt="Herramientas profesionales de barbería" width="700" height="500" loading="lazy" decoding="async" />
+          </figure>
+          <figure>
+            <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=700&q=80" alt="Trabajo profesional de barbería" width="700" height="500" loading="lazy" decoding="async" />
+          </figure>
+        </section>
+
+        <section className="shell cta-band">
+          <h2>Pon orden en tu agenda desde hoy.</h2>
+          <div className="actions">
+            <Link className="btn primary" href="/login">Entrar al panel</Link>
+            <Link className="btn ghost" href="/reserva">Consultar una reserva</Link>
+          </div>
+        </section>
       </main>
-      <footer className="footer"><div className="shell">© {new Date().getFullYear()} BarberPro. Plataforma de gestión para barberías.</div></footer>
+
+      <footer className="footer">
+        <div className="shell footer-row">
+          <Brand />
+          <span>© {new Date().getFullYear()} BarberPro. Plataforma de gestión para barberías.</span>
+        </div>
+      </footer>
     </>
   );
 }
