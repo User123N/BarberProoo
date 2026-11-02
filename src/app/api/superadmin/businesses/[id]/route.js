@@ -59,7 +59,7 @@ export async function PATCH(request, { params }) {
     let ownerUserId = null;
     if (hasEmail || hasPassword) {
       const email = String(body.ownerEmail || "").trim().toLowerCase();
-      if (hasEmail && !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return NextResponse.json({ error: "El correo del propietario no es válido." }, { status: 400 });
+      if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "El correo del propietario no es válido." }, { status: 400 });
       const password = String(body.ownerPassword || "");
       if (hasPassword && (password.length < 8 || password.length > 72)) return NextResponse.json({ error: "La nueva contraseña debe tener entre 8 y 72 caracteres." }, { status: 400 });
       const { data: member, error: memberError } = await admin.from("business_members").select("user_id").eq("business_id", id).eq("role", "owner").eq("active", true).limit(1).maybeSingle();
