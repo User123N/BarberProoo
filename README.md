@@ -19,7 +19,7 @@ Abre http://localhost:3000.
 ## Configurar Supabase
 1. En SQL Editor ejecuta `supabase/migrations/001_core.sql` una sola vez.
 2. Ejecuta `supabase/migrations/002_booking_and_public_catalog.sql`.
-   Luego, **cada una en su propia ejecución y en este orden**: `003_roles_enum.sql`, `004_security_hardening.sql`, `005_availability_and_booking.sql` y finalmente `006_branding_storage.sql` (cada una en una ejecución separada; probar primero en un proyecto de pruebas; ver `docs/AUDITORIA.md`).
+   Luego, **cada una en su propia ejecución y en este orden**: `003_roles_enum.sql`, `004_security_hardening.sql`, `005_availability_and_booking.sql` y finalmente `006_branding_storage.sql`, `007_fix_storage_upload_policy.sql`, `008_public_page_media_location.sql` y `009_private_customer_photos.sql` (cada una en una ejecución separada y en ese orden; probar primero en un proyecto de pruebas; ver `docs/AUDITORIA.md`).
    `005` crea un horario por defecto editable (lun–sáb 09:00–19:00) para barberos existentes sin horario.
    Verificación: `supabase/tests/verify_security_and_booking.sql`. Superadmin: `supabase/setup_superadmin.sql`.
    En Authentication → URL Configuration agrega también `http://localhost:3000/auth/callback` (recuperación de contraseña).
@@ -50,7 +50,7 @@ No agregues jamás `service_role` al frontend ni a variables `NEXT_PUBLIC_*`. Ma
 
 ## Fase 1b: calendario, marca y seguridad
 
-Después de las migraciones 001–005, ejecuta `supabase/migrations/006_branding_storage.sql` una sola vez en Supabase. Crea el bucket público `barberpro-media` con límite de 5 MB e imágenes JPEG/PNG/WebP/AVIF; las escrituras quedan limitadas a administradores del negocio y superadmin mediante RLS de Storage.
+Después de las migraciones 001–006, ejecuta `supabase/migrations/007_fix_storage_upload_policy.sql` y `supabase/migrations/008_public_page_media_location.sql`, cada una una sola vez y en ese orden. Crea el bucket público `barberpro-media` con límite de 5 MB e imágenes JPEG/PNG/WebP/AVIF; las escrituras quedan limitadas a administradores del negocio y superadmin mediante RLS de Storage.
 
 Para registrar barberías e invitar propietarios desde `/superadmin`, configura `SUPABASE_SERVICE_ROLE_KEY` como variable **sólo de servidor** en `.env.local` y en Netlify. No la publiques ni la incluyas en variables `NEXT_PUBLIC_`. Sin esta variable, las operaciones administrativas que la requieren mostrarán un error seguro.
 
