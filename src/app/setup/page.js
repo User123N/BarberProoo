@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -9,7 +10,7 @@ export default async function Setup() {
   if (!user) redirect("/login");
   return (
     <main className="shell setup-page">
-      <a className="brand" href="/">BARBER<span>PRO</span></a>
+      <Link className="brand" href="/">BARBER<span>PRO</span></Link>
       <div className="feature">
         <div className="eyebrow">CONFIGURACIÓN INICIAL</div>
         <h1>Vincular tu primera barbería</h1>
@@ -21,7 +22,7 @@ export default async function Setup() {
           <li>Agrega barberos y servicios, y configura el horario de cada barbero en “Horarios”.</li>
         </ol>
         <p className="muted">Tu UUID está en Authentication → Users. No compartas claves secretas.</p>
-        <a className="btn btn-primary" href="/dashboard">Volver al panel</a>
+        <Link className="btn btn-primary" href="/dashboard">Volver al panel</Link>
       </div>
     </main>
   );
