@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";\nimport { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 const cleanSlug = (value) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 export default function SettingsTab({ business }) {
-  const sb = useMemo(() => createClient(), []);\n  const router = useRouter();
+  const sb = useMemo(() => createClient(), []);
+  const router = useRouter();
   const [s, setS] = useState(null);
   const [profile, setProfile] = useState({
     name: business.name, slug: business.slug, description: business.description || "",
